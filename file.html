@@ -1,0 +1,317 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>CyberPatriot Mint 21 Practice Round — Step-by-Step Guide</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #17212b;
+      --muted: #526273;
+      --brand: #086b68;
+      --brand-light: #e6f4f1;
+      --border: #d7e0e7;
+      --warning: #fff4d6;
+      --warning-border: #e6b84c;
+      --surface: #ffffff;
+      --page: #f3f6f8;
+      --code: #15212b;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      background: var(--page);
+      color: var(--ink);
+      font: 16px/1.65 system-ui, -apple-system, "Segoe UI", sans-serif;
+    }
+
+    header {
+      padding: 3rem 1.25rem;
+      background: linear-gradient(135deg, #075e5b, #12827a);
+      color: white;
+    }
+
+    header .inner, main {
+      width: min(100% - 2rem, 900px);
+      margin-inline: auto;
+    }
+
+    h1 {
+      margin: 0 0 .5rem;
+      font-size: clamp(2rem, 5vw, 3rem);
+      line-height: 1.15;
+    }
+
+    header p { max-width: 700px; margin-bottom: 0; }
+
+    main { padding: 2rem 0 4rem; }
+
+    .notice {
+      margin-bottom: 1.5rem;
+      padding: 1rem 1.25rem;
+      border: 1px solid var(--warning-border);
+      border-left: 5px solid var(--warning-border);
+      border-radius: 10px;
+      background: var(--warning);
+    }
+
+    .notice p { margin: 0; }
+
+    .step {
+      margin: 1rem 0;
+      padding: 1.4rem;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      background: var(--surface);
+      box-shadow: 0 3px 12px rgb(23 33 43 / 5%);
+    }
+
+    .step h2 {
+      display: flex;
+      align-items: flex-start;
+      gap: .75rem;
+      margin: 0 0 .75rem;
+      font-size: 1.25rem;
+      line-height: 1.35;
+    }
+
+    .number {
+      display: inline-grid;
+      flex: 0 0 2rem;
+      width: 2rem;
+      height: 2rem;
+      place-items: center;
+      border-radius: 50%;
+      background: var(--brand-light);
+      color: var(--brand);
+      font-size: 1rem;
+      font-weight: 800;
+    }
+
+    p { margin: .5rem 0; }
+    ul, ol { padding-left: 1.4rem; }
+    li { margin: .35rem 0; }
+
+    code {
+      padding: .12rem .35rem;
+      border-radius: 5px;
+      background: #edf1f4;
+      font: .92em ui-monospace, SFMono-Regular, Consolas, monospace;
+      overflow-wrap: anywhere;
+    }
+
+    pre {
+      overflow-x: auto;
+      margin: .75rem 0;
+      padding: 1rem;
+      border-radius: 9px;
+      background: var(--code);
+      color: #f1f7fa;
+      font: .92rem/1.55 ui-monospace, SFMono-Regular, Consolas, monospace;
+    }
+
+    pre code { padding: 0; background: none; color: inherit; }
+
+    .tip {
+      margin-top: .75rem;
+      padding: .75rem 1rem;
+      border-radius: 8px;
+      background: var(--brand-light);
+      color: #154b49;
+    }
+
+    .penalty {
+      border-left: 5px solid #a94442;
+    }
+
+    footer {
+      padding-top: 1.5rem;
+      color: var(--muted);
+      font-size: .92rem;
+    }
+
+    @media (max-width: 560px) {
+      header { padding: 2rem 1rem; }
+      .step { padding: 1.1rem; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="inner">
+      <h1>CyberPatriot Mint 21 Practice Round</h1>
+      <p>A step-by-step guide to the scored tasks, security fixes, and penalties in the practice image.</p>
+    </div>
+  </header>
+
+  <main>
+    <aside class="notice">
+      <p><strong>Practice image only:</strong> Follow the README in your image, and review all forensics questions before making changes. Removing users, files, packages, or changing services can be destructive on a real computer.</p>
+    </aside>
+
+    <section class="step">
+      <h2><span class="number">1</span>Find the MP3 directory — Forensics Question 1 (8 points)</h2>
+      <ol>
+        <li>Read all forensics questions before modifying the image.</li>
+        <li>Open a terminal with <code>Ctrl</code> + <code>Alt</code> + <code>T</code>.</li>
+        <li>Update the file index:
+          <pre><code>sudo updatedb</code></pre>
+        </li>
+        <li>Search for MP3 files:
+          <pre><code>locate '*.mp3'</code></pre>
+        </li>
+        <li>The directory containing the files is <code>/home/benjamin/Music</code>.</li>
+      </ol>
+    </section>
+
+    <section class="step">
+      <h2><span class="number">2</span>Remove unauthorized user tgianopolous (5 points)</h2>
+      <ol>
+        <li>Check the README for the list of authorized accounts.</li>
+        <li>Open <strong>Menu → Administration → Users and Groups</strong>.</li>
+        <li>Select <code>tgianopolous</code>, choose <strong>Delete</strong>, and authenticate if prompted.</li>
+        <li>Choose <strong>Delete Files</strong> if that is required by the practice image.</li>
+      </ol>
+    </section>
+
+    <section class="step">
+      <h2><span class="number">3</span>Remove unauthorized user jquelling (5 points)</h2>
+      <ol>
+        <li>In <strong>Users and Groups</strong>, select <code>jquelling</code>.</li>
+        <li>Choose <strong>Delete</strong>, authenticate if prompted, then choose <strong>Delete Files</strong> if required.</li>
+      </ol>
+    </section>
+
+    <section class="step">
+      <h2><span class="number">4</span>Make dscott a standard user (5 points)</h2>
+      <ol>
+        <li>In <strong>Users and Groups</strong>, select <code>dscott</code>.</li>
+        <li>Next to <strong>Account Type</strong>, choose <strong>Change… → Desktop User → OK</strong>.</li>
+        <li>Authenticate to apply the change.</li>
+      </ol>
+      <p class="tip"><strong>Correction:</strong> The pasted instructions say to select jquelling in this step, but the scored task is about dscott. Select dscott.</p>
+    </section>
+
+    <section class="step">
+      <h2><span class="number">5</span>Change llitt’s insecure password (5 points)</h2>
+      <ol>
+        <li>In <strong>Users and Groups</strong>, select <code>llitt</code>.</li>
+        <li>Choose <strong>Password → Change…</strong> and authenticate.</li>
+        <li>Select <strong>Set password by hand</strong>.</li>
+        <li>Enter a secure password of at least 12 characters in both password fields, then choose <strong>OK</strong>.</li>
+      </ol>
+    </section>
+
+    <section class="step">
+      <h2><span class="number">6</span>Create administrator account edarby (6 points)</h2>
+      <p>Open a terminal and run:</p>
+      <pre><code>sudo adduser edarby
+sudo usermod -aG sudo edarby</code></pre>
+      <p>Follow the prompts to create the account and enter a password.</p>
+    </section>
+
+    <section class="step">
+      <h2><span class="number">7</span>Require edarby to change password at next login (6 points)</h2>
+      <p>Run:</p>
+      <pre><code>sudo passwd -e edarby</code></pre>
+    </section>
+
+    <section class="step">
+      <h2><span class="number">8</span>Enable UFW firewall (6 points)</h2>
+      <ol>
+        <li>Check its current status:
+          <pre><code>sudo ufw status</code></pre>
+        </li>
+        <li>Enable it in <strong>Menu → Control Center → Firewall Configuration</strong>, or run:
+          <pre><code>sudo ufw enable</code></pre>
+        </li>
+        <li>Authenticate if prompted.</li>
+      </ol>
+    </section>
+
+    <section class="step">
+      <h2><span class="number">9</span>Disable or remove the FTP service (6 points)</h2>
+      <p>Stop and purge vsftpd:</p>
+      <pre><code>sudo systemctl stop vsftpd
+sudo apt purge vsftpd</code></pre>
+      <p>When asked to continue, enter <code>y</code>.</p>
+    </section>
+
+    <section class="step">
+      <h2><span class="number">10</span>Set updates to apply automatically (5 points)</h2>
+      <ol>
+        <li>Open <strong>Menu → Control Center → Update Manager</strong>.</li>
+        <li>Choose <strong>Edit → Preferences → Automation</strong>.</li>
+        <li>Select <strong>Apply updates automatically</strong> and authenticate if prompted.</li>
+      </ol>
+    </section>
+
+    <section class="step">
+      <h2><span class="number">11</span>Install available updates (5 points)</h2>
+      <p>In Update Manager, refresh the list and choose <strong>Install Updates</strong>. Alternatively, run:</p>
+      <pre><code>sudo apt update
+sudo apt full-upgrade -y</code></pre>
+      <p>Read any prompts about configuration files before responding. Keeping the local version is often safer when you are unsure, because replacing it can change service configuration.</p>
+    </section>
+
+    <section class="step">
+      <h2><span class="number">12</span>Update systemd, Chromium, and OpenSSH (5 points each)</h2>
+      <p>Update the package list and upgrade installed packages:</p>
+      <pre><code>sudo apt update
+sudo apt full-upgrade -y</code></pre>
+      <p>Review configuration-file prompts carefully. The practice key says the package maintainer’s version of the OpenSSH configuration is acceptable for this image, but that choice may differ in another competition image.</p>
+    </section>
+
+    <section class="step">
+      <h2><span class="number">13</span>Remove prohibited MP3 files (5 points)</h2>
+      <ol>
+        <li>Find the files:
+          <pre><code>locate '*.mp3'</code></pre>
+        </li>
+        <li>Confirm they are prohibited by the README and are in the expected directory.</li>
+        <li>For the files identified in this practice image, remove MP3s from the Music directory:
+          <pre><code>sudo rm /home/benjamin/Music/*.mp3</code></pre>
+        </li>
+      </ol>
+      <p class="tip"><strong>Path correction:</strong> The pasted command had a spacing error. The corrected path is <code>/home/benjamin/Music/*.mp3</code>. Double-check the path before running <code>rm</code>.</p>
+    </section>
+
+    <section class="step">
+      <h2><span class="number">14</span>Remove Wireshark and Zangband (6 points each)</h2>
+      <p>After confirming these packages are not authorized by the README, run:</p>
+      <pre><code>sudo apt purge -y 'wireshark*' 'zangband*'</code></pre>
+    </section>
+
+    <section class="step">
+      <h2><span class="number">15</span>Disable SSH root login (6 points)</h2>
+      <ol>
+        <li>Install the text editor if it is not already available:
+          <pre><code>sudo apt update
+sudo apt install -y gedit</code></pre>
+        </li>
+        <li>Open the SSH server configuration with administrative permission:
+          <pre><code>gedit admin:///etc/ssh/sshd_config</code></pre>
+        </li>
+        <li>Change <code>PermitRootLogin yes</code> to <code>PermitRootLogin no</code>.</li>
+        <li>Save the file and exit. Keep the OpenSSH service installed and available, as the README identifies it as critical.</li>
+      </ol>
+    </section>
+
+    <section class="step penalty">
+      <h2><span class="number">!</span>Penalties to avoid</h2>
+      <ul>
+        <li><strong>VirtualBox:</strong> The image warns that VirtualBox is unsupported. Use the competition-specified version of VMware Workstation Pro.</li>
+        <li><strong>OpenSSH stopped or removed:</strong> Avoid this; the README identifies OpenSSH as a critical service. Penalty: 5 points.</li>
+        <li><strong>Chromium removed:</strong> Keep Chromium installed; the README identifies it as the required default browser. Penalty: 5 points.</li>
+      </ul>
+    </section>
+
+    <footer>
+      Work through the README and scoring requirements for your specific image. This guide reorganizes the pasted practice-round answer key; it does not replace the image’s instructions.
+    </footer>
+  </main>
+</body>
+</html>
