@@ -1,0 +1,35 @@
+body {
+  min-height: 100vh;
+  margin: 0;
+  font-family: Arial, Helvetica, sans-serif;
+  background: linear-gradient(
+    to bottom,
+    rgb(76, 159, 207),
+    rgb(37, 160, 231),
+    rgb(5, 195, 243)
+  );
+  font-family: "Inter", Arial, sans-serif;
+}
+
+#boxone {
+  width: 60%;
+  max-width: 800px;
+  box-sizing: border-box;
+  background: white;
+  border: 2px solid black;
+  border-radius: 20px;
+  padding: 20px;
+  margin: 10px auto;
+  text-align: center;
+}
+
+
+h1 {
+  font-size: 2.2rem;
+  font-weight: 700;
+}
+
+p {
+    font-weight: 400;
+  font-size: 1.2rem;
+}

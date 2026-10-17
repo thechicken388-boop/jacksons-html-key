@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Linux guide for comp</title>
+  <link rel="stylesheet" href="style.css">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+
+</head>
+
+<body>
+  <h1>Linux steps in case of emergency😒</h1>
+
+  <div id="boxone">
+<h2>Step 1: Find files relevant to forensics and prohibited-media checks</h2>
+<pre><code>sudo updatedb
+locate -i '*.mp3'
+find /home -type f \( -iname '*.mp3' -o -iname '*.mp4' -o -iname '*.avi' -o -iname '*.mkv' \) -print</code></pre>
+<p>Locate uses an index that may be stale; find searches the directories directly. Inspect results and answer forensics questions before deleting anything. Remove only files the scenario actually prohibits—don’t blindly delete all media.</p>
+
+<h2>Step 2: Compare accounts with the authorized-user list</h2>
+<pre><code>getent passwd
+getent group sudo</code></pre>
+<p>Compare the results with the README. Some system/service accounts are legitimate, so don’t delete every unfamiliar account or every account with a low UID. Investigate accounts that can log in and aren’t authorized. After confirming an account is unauthorized:</p>
+<pre><code>sudo deluser --remove-home USERNAME</code></pre>
+<p>This deletes the account’s home directory too; preserve evidence or files needed for forensics first.</p>
+
+<h2>Step 3: Check who has administrator privileges</h2>
+<pre><code>getent group sudo</code></pre>
+<p>Remove unauthorized users from the sudo group only after checking the authorized-admin list:</p>
+<pre><code>sudo deluser USERNAME sudo</code></pre>
+
+<h2>Step 4: Check password status and force a change when required</h2>
+<pre><code>sudo passwd -S USERNAME
+sudo chage -l USERNAME</code></pre>
+<p>To require a password change at next login:</p>
+<pre><code>sudo passwd -e USERNAME</code></pre>
+<p>Set or reset a password interactively with sudo passwd USERNAME; don’t put passwords directly in shell commands.</p>
+
+<h2>Step 5: Create a required administrator account</h2>
+<pre><code>sudo adduser USERNAME
+sudo usermod -aG sudo USERNAME
+sudo passwd -e USERNAME</code></pre>
+<p>Use the exact account name required by the README, set a temporary password interactively, and verify group membership with groups USERNAME.</p>
+
+<h2>Step 6: Check UFW</h2>
+<pre><code>sudo ufw status verbose</code></pre>
+<p>If UFW is required, allow required traffic—especially SSH—before enabling it:</p>
+<pre><code>sudo ufw allow OpenSSH
+sudo ufw enable</code></pre>
+<p>Don’t enable a competing firewall if policy names UFW as the approved one. Confirm the required access still works afterward.</p>
+
+<h2>Step 7: Keep required services running; remove only prohibited ones</h2>
+<pre><code>systemctl --type=service --state=running
+systemctl is-enabled ssh
+systemctl is-active ssh</code></pre>
+<p>If SSH is required, don’t stop or purge it. To check whether an unwanted package is installed:</p>
+<pre><code>dpkg -l | grep -i PACKAGE</code></pre>
+<p>Purge only software prohibited by the README or clearly unnecessary and unauthorized. Review package names before running apt purge.</p>
+
+<h2>Step 8: Update from the approved repositories</h2>
+<pre><code>sudo apt update
+apt list --upgradable
+sudo apt full-upgrade</code></pre>
+<p>Review prompts and preserve required service configurations. Use Update Manager for automatic-update settings if the scenario requires them; enable Source Code sources if the README specifically says to.</p>
+
+<h2>Step 9: Disable SSH root login without disabling SSH</h2>
+<p>Check the effective SSH setting:</p>
+<pre><code>sudo sshd -T | grep permitrootlogin</code></pre>
+<p>Set PermitRootLogin no in the SSH server configuration, then validate before applying changes:</p>
+<pre><code>sudo sshd -t
+sudo systemctl reload ssh</code></pre>
+<p>Don’t disable password authentication unless the scenario permits it and you have confirmed authorized users can still log in. OpenSSH configuration can include other files, so check the effective setting rather than assuming a line in one file is controlling it.</p>
+<p>tecmint.com</p>
+
+<h2>Step 10: Check the required OS, browser, and display manager</h2>
+<pre><code>cat /etc/linuxmint/info
+apt policy chromium
+cat /etc/X11/default-display-manager</code></pre>
+<p>Keep the required Mint release and LightDM. Use the approved repository version of Chromium, set it as the default browser if required, and don’t switch display managers.</p>
+
+<p>20 additional checks</p>
+<p>These are useful security and competition checks; apply changes only when they fit the README and won’t disrupt required business services.</p>
+
+<h2>Step 11: Check automatic login and guest access</h2>
+<p>Review System Settings → Login Window for automatic login and guest sessions. Disable them if policy requires it; don’t change LightDM itself.</p>
+
+<h2>Step 12: Check passwordless sudo rules</h2>
+<pre><code>sudo grep -RInE 'NOPASSWD|ALL[[:space:]]*=' /etc/sudoers /etc/sudoers.d 2&gt;/dev/null</code></pre>
+<p>Investigate unexpected rules. Edit sudo configuration with sudo visudo so syntax is checked.</p>
+
+<h2>Step 13: Check for accounts with no password</h2>
+<pre><code>sudo awk -F: '$2 == "" {print $1}' /etc/shadow</code></pre>
+<p>Investigate any results; don’t expose or copy /etc/shadow contents.</p>
+
+<h2>Step 14: Check for duplicate user or group IDs</h2>
+<pre><code>cut -d: -f3 /etc/passwd | sort | uniq -d
+cut -d: -f3 /etc/group | sort | uniq -d</code></pre>
+<p>Investigate duplicates before making changes; system images can have legitimate exceptions.</p>
+
+<h2>Step 15: Look for unexpected listening network ports</h2>
+<pre><code>sudo ss -tulpn</code></pre>
+<p>Identify the owning process and compare it with the required-services list before stopping anything.</p>
+
+<h2>Step 16: Check enabled services at startup</h2>
+<pre><code>systemctl list-unit-files --type=service --state=enabled</code></pre>
+<p>Disable only services confirmed unnecessary and unauthorized. Don’t disable SSH or other critical services.</p>
+
+<h2>Step 17: Check scheduled tasks</h2>
+<pre><code>sudo ls -la /etc/cron.d /etc/cron.daily /etc/cron.hourly /etc/cron.weekly
+sudo crontab -l</code></pre>
+<p>Also inspect users’ crontabs with sudo crontab -u USERNAME -l. Investigate unfamiliar entries before removing them.</p>
+
+<h2>Step 18: Review SSH configuration for risky settings</h2>
+<pre><code>sudo sshd -T | grep -E 'permitrootlogin|permitemptypasswords|passwordauthentication'</code></pre>
+<p>Enforce the scenario’s settings, then run sudo sshd -t before reloading the service.</p>
+
+<h2>Step 19: Check for unusual startup or login scripts</h2>
+<p>Review /etc/profile, /etc/profile.d/, /etc/bash.bashrc, and users’ shell startup files for commands you don’t recognize. Don’t delete entries just because they’re unfamiliar; identify what they do first.</p>
+
+<h2>Step 20: Check for unexpected package sources</h2>
+<pre><code>grep -RInE '^[[:space:]]*deb ' /etc/apt/sources.list /etc/apt/sources.list.d 2&gt;/dev/null</code></pre>
+<p>Compare sources with the company policy. Don’t remove required official Mint/Ubuntu sources.</p>
+
+<h2>Step 21: Review installed packages for prohibited software</h2>
+<pre><code>apt list --installed</code></pre>
+<p>Search specific names with dpkg -l | grep -i NAME. Don’t remove tools or packages required by the OS, README, or forensic questions.</p>
+
+<h2>Step 22: Search home folders for suspicious archives and installers</h2>
+<pre><code>find /home -type f \( -iname '*.deb' -o -iname '*.zip' -o -iname '*.tar.gz' -o -iname '*.tgz' \) -print</code></pre>
+<p>These file types aren’t automatically malicious. Inspect contents and context before deleting.</p>
+
+<h2>Step 23: Check file permissions on sensitive system files</h2>
+<pre><code>ls -l /etc/passwd /etc/shadow /etc/sudoers</code></pre>
+<p>If permissions appear wrong, research the expected ownership and mode for Mint before changing them.</p>
+
+<h2>Step 24: Check for world-writable files in user homes</h2>
+<pre><code>find /home -xdev -type f -perm -0002 -print</code></pre>
+<p>Review each result; some shared files may be intentional.</p>
+
+<h2>Step 25: Check for SUID/SGID executables</h2>
+<pre><code>sudo find / -xdev \( -perm -4000 -o -perm -2000 \) -type f -print 2&gt;/dev/null</code></pre>
+<p>Compare unexpected results with the installed packages. Don’t remove permission bits indiscriminately; system programs may need them.</p>
+
+<h2>Step 26: Check for unexpected user login shells</h2>
+<pre><code>getent passwd | awk -F: '$7 !~ /(nologin|false)$/ {print $1, $7}'</code></pre>
+<p>Compare login-capable accounts with the authorized list, accounting for legitimate system accounts.</p>
+
+<h2>Step 27: Check the system clock and time synchronization</h2>
+<pre><code>timedatectl status</code></pre>
+<p>Correct time helps logs and updates work properly. Don’t change network or time settings if the competition environment requires a specific setup.</p>
+
+<h2>Step 28: Review recent authentication and system events</h2>
+<pre><code>sudo journalctl -p warning..alert -b
+sudo journalctl -u ssh -b</code></pre>
+<p>Look for suspicious activity, but preserve logs if they may be needed for forensics.</p>
+
+<h2>Step 29: Check disk space and failed services</h2>
+<pre><code>df -h
+systemctl --failed</code></pre>
+<p>Resolve problems without removing required files or services.</p>
+
+<h2>Step 30: Recheck the requirements after changes</h2>
+<pre><code>sudo ufw status verbose
+systemctl is-active ssh
+systemctl is-enabled ssh
+cat /etc/X11/default-display-manager</code></pre>
+
+<h2>Made by the coolest cadet Jackson</h2>
+
+  </div>
+</body>
+</html>
